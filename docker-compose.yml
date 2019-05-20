@@ -1,0 +1,29 @@
+version: '3.4'
+
+services:
+
+  srs:
+    image: ernestgwilsonii/docker-raspberry-pi-srs:2.0.263
+    hostname: srs
+    command: ["/usr/local/bin/python", "-m", "srs.server", "--path", "/opt/rasa"]
+    ports:
+      # srs unencrypted TCP 5000
+      - mode: host
+        target: 5000
+        published: 5000
+        protocol: tcp
+    networks:
+      - rasa-net1
+    volumes:
+      - type: bind
+        source: /opt/srs
+        target: /opt/srs
+    deploy:
+      labels:
+        local.description: "srs RTMP server"
+      restart_policy:
+        condition: on-failure
+
+networks:
+  srs-net1:
+

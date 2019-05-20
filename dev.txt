@@ -1,0 +1,52 @@
+# srs - https://github.com/ossrs/srs
+# Start with an official arm32v7 image for Raspberry Pi 3 B+
+docker run --name srs -it -p 1935:1935 -p 8085:8085 arm32v7/python:3.7.3-slim-stretch bash
+
+# Update and install requirements
+apt-get update && apt-get upgrade -y
+apt-get install -y apt-utils build-essential cmake gcc git net-tools pkg-config sudo unzip wget
+
+# Clone srs repo
+cd /opt && git clone https://github.com/ossrs/srs && cd srs/trunk
+
+# Fix: Raspberry Pi 3 B+ "Segmentation fault (core dumped)" - Issue: https://github.com/ossrs/srs/issues/1282
+wget https://github.com/ossrs/srs/files/2660564/1.st.arm.patch.txt
+rm 3rdparty/patches/1.st.arm.patch
+mv 1.st.arm.patch.txt 3rdparty/patches/1.st.arm.patch
+
+# Configure, make and install srs
+./configure && make
+make install
+
+# Review the srs version
+/usr/local/srs/objs/srs -v
+
+# Command line start srs server
+/usr/local/srs/objs/srs -c /usr/local/srs/conf/rtmp.conf
+
+# Encode video using USB webcamon Raspberry Pi
+#ffmpeg -i /dev/video0 -vcodec mpeg4 -f mpegts rtmp://192.168.1.12/live/livestream # NO VIDEO DISPLAYED ON VLC
+#ffmpeg -i /dev/video0 -vcodec libx264 -preset ultrafast -tune zerolatency -r 10 -async 1 -maxrate 750k -bufsize 3000k -f mpegts rtmp://192.168.1.12/live/livestream # NO VIDEO DISPLAYED ON VLC
+# THESE WORKED!
+ffmpeg -y -loglevel warning -i /dev/video0 -vcodec libx264 -f flv rtmp://192.168.1.12/live/livestream
+ffmpeg -i /dev/video0 -vcodec libx264 -f flv rtmp://192.168.1.12/live/livestream
+ffmpeg -i /dev/video0 -vcodec libx264 -preset ultrafast -tune zerolatency -r 10 -async 1 -maxrate 750k -bufsize 3000k -f flv rtmp://192.168.1.12/live/livestream
+
+# Play video on VLC
+rtmp://192.168.1.12:1935/live/livestream
+
+#docker stop srs && docker rm srs
+
+
+# MAC
+# https://hackernoon.com/build-live-video-streaming-server-use-ffmpeg-nginx-rtmp-module-nodejs-82e1bb58949e
+brew install ffmpeg
+ffmpeg -f avfoundation -list_devices true -i “”
+
+# Twitch
+# Webcam
+ffmpeg -f avfoundation -framerate 30 -video_size 1280x720 -i "0:none" -vcodec libx264 -preset ultrafast -tune zerolatency -pix_fmt yuv422p -f flv "rtmp://live-jfk.twitch.tv/app/live_SecretKeyHere"
+# Desktop
+ffmpeg -f avfoundation -framerate 30 -video_size 1280x720 -i "2:none" -vcodec libx264 -preset ultrafast -tune zerolatency -pix_fmt yuv422p -f flv "rtmp://live-jfk.twitch.tv/app/live_SecretKeyHere"
+# example
+#ffmpeg -f x11grab -video_size 1920x1080 -framerate 24 -i $DISPLAY -f alsa -i default -af acompressor=threshold=0.089:ratio=9:attack=200:release=1000 -vf scale=1280x720 -c:v h264 -g 24 -b:v 2M -preset ultrafast -c:a aac -pix_fmt yuv420p -f flv "rtmp://live-lax.twitch.tv/app/XXXXXXXXXXXXXX"
