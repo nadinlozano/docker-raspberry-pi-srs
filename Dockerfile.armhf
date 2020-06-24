@@ -1,4 +1,4 @@
-FROM arm32v7/python:3.7.3-slim-stretch
+FROM arm32v7/python:3.8.3-slim-buster
 
 RUN apt-get update \
     && apt-get upgrade -y \
@@ -10,7 +10,7 @@ RUN apt-get update \
     && mkdir -p /objs \
     && chmod a+rw /objs \
     && ./configure \
-    && make \
+    && make -j4 \
     && make install \
     && /usr/local/srs/objs/srs -v \
     && apt-get clean -y \
