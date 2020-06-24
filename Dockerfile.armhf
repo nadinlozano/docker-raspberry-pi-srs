@@ -21,4 +21,4 @@ RUN apt-get update \
 EXPOSE 1935/tcp
 EXPOSE 8085/tcp
  
-CMD ["/usr/local/srs/objs/srs", "-c", "/usr/local/srs/conf/rtmp.conf"]
+CMD ["/usr/local/srs/objs/srs", "-c", "/usr/local/srs/conf/http.flv.live.conf"]
