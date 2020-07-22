@@ -19,6 +19,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
     
 EXPOSE 1935/tcp
-EXPOSE 8085/tcp
+EXPOSE 1985/tcp
+EXPOSE 8080/tcp
  
 CMD ["/usr/local/srs/objs/srs", "-c", "/usr/local/srs/conf/http.flv.live.conf"]
