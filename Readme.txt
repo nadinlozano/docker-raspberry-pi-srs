@@ -10,7 +10,7 @@ time docker build --no-cache -t ernestgwilsonii/docker-raspberry-pi-srs:2.0.263 
 docker images
 
 # Verify 
-docker run -it -p 1935:1935 -p 1985:198585 -p 8080:8080 ernestgwilsonii/docker-raspberry-pi-srs:2.0.263
+docker run -it -p 1935:1935 -p 1985:1985 -p 8080:8080 ernestgwilsonii/docker-raspberry-pi-srs:2.0.263
 # From another ssh session:
 #docker ps
 
