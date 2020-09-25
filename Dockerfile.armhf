@@ -5,7 +5,7 @@ RUN apt-get update \
     && apt-get install -y apt-utils build-essential cmake gcc git net-tools pkg-config sudo unzip wget \
     && cd /opt && git clone https://github.com/ossrs/srs && cd srs/trunk \
     && wget https://github.com/ossrs/srs/files/2660564/1.st.arm.patch.txt \
-    && rm 3rdparty/patches/1.st.arm.patch \
+    && mkdir -p 3rdparty/patches/1.st.arm.patch \
     && mv 1.st.arm.patch.txt 3rdparty/patches/1.st.arm.patch \
     && mkdir -p /objs \
     && chmod a+rw /objs \
